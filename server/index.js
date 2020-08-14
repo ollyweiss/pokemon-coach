@@ -24,17 +24,15 @@ function parsePokemonFile() {
     let pokemonMap = new Map();
     pokemonList.forEach((pokemon) => {
         const typeList = pokemon.split(',');
-        pokemonMap.set(typeList[1].toLowerCase(), typeList.slice(2,4));
+        pokemonMap.set(typeList[1].toLowerCase(), typeList.slice(2,4).map((x) => x.toLowerCase()));
     })
     return pokemonMap;
 }
 
 
 app.get('/api/greeting', (req, res) => {
-    let type = getType(req);
-    console.log(type);
-    console.log(pokemonWeaknessesJson);
-    console.log(pokemonWeaknessesJson[type]);
+    let types = getTypes(req);
+    console.log(types);
 });
 
 
@@ -43,7 +41,7 @@ app.get('/type', (req, res) => {
     if (type === undefined) {
         return res.status(400);
     }
-    return res.status(200).send(type);
+    return res.status(200).send(JSON.stringify(type));
 })
 
 
@@ -79,6 +77,24 @@ function getType(req) {
         return undefined;
     }
     return type;
+}
+
+
+function getTypes(req) {
+    const name = req.query.name.toLowerCase();
+    let types = [];
+    if (pokemonTypes.includes(name)) {
+        types = [name];
+    } else if (containsPokemon(name)) {
+        const currPokemon = getPokemon(name);
+        types = pokemon.get(currPokemon);
+        if (types[1] === '') {
+            types = types[0];
+        }
+    } else {
+        return undefined;
+    }
+    return types;
 }
 
 
