@@ -13,10 +13,11 @@ const pokemonTypes = pokemonTypeFile.split('\n');
 
 const pokemonFile = fs.readFileSync('./public/pokemon.csv');
 
-app.get('/hey', async (req, res) => {
-    const test = ["hi", "truffle"];
+
+app.get('/api/greeting', (req, res) => {
+    const name = req.query.name || 'World';
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(test));
+    res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
 });
 
 
@@ -29,3 +30,8 @@ app.get('/weaknesses', async (req, res) => {
     // res.setHeader('Content-Type', 'application/json');
     // res.send(JSON.stringify(test));
 });
+
+
+app.listen(3001, () =>
+  console.log('Express server is running on localhost:3001')
+);
