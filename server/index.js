@@ -8,27 +8,72 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(bodyParser.json());
 
-// const pokemonTypeFile = fs.readFileSync('./public/types.txt');
-// const pokemonTypes = pokemonTypeFile.split('\n');
-//
-// const pokemonFile = fs.readFileSync('./public/pokemon.csv');
+const pokemonTypeFile = fs.readFileSync('./public/types.txt');
+const pokemonTypes = pokemonTypeFile.toString().split('\n');
+const pokemon = parsePokemonFile();
+const pokemonWeaknesses = fs.readFileSync('./public/weaknesses.json').toString();
+const pokemonWeaknessesJson = JSON.parse(pokemonWeaknesses);
 
 
-app.get('/api/greeting', (req, res) => {
-    const name = req.query.name || 'World';
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify({ greeting: `Hello ${name}!` }));
+function parsePokemonFile() {
+    const pokemonFile = fs.readFileSync('./public/pokemon.csv').toString();
+    const pokemonList = pokemonFile.split('\n');
+
+    let pokemonMap = new Map();
+    pokemonList.forEach((pokemon) => {
+        const typeList = pokemon.split(',');
+        pokemonMap.set(typeList[1].toLowerCase(), typeList.slice(2,4));
+    })
+    return pokemonMap;
+}
+
+
+app.get('/api/greeting', async (req, res) => {
+    let type = await getType(req);
+    console.log(type);
+    console.log(pokemonWeaknessesJson);
+    console.log(pokemonWeaknessesJson[type]);
 });
 
 
 app.get('/weaknesses', async (req, res) => {
-    if (pokemonTypes.includes(req.body)) {
-        console.log('wee');
-    }
-
-    // res.setHeader('Content-Type', 'application/json');
-    // res.send(JSON.stringify(test));
 });
+
+
+async function getType(req) {
+    const name = req.query.name.toLowerCase();
+    let type = '';
+    if (pokemonTypes.includes(name)) {
+        type = name;
+    } else if (await containsPokemon(name)) {
+        const currPokemon = await getPokemon(name);
+        type = pokemon.get(currPokemon)[0].toLowerCase();
+    } else {
+        return res.status(400);
+    }
+    return type;
+}
+
+
+async function containsPokemon(input) {
+    const options = Array.from(pokemon.keys());
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].includes(input)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+async function getPokemon(input) {
+    const options = Array.from(pokemon.keys());
+    for (let i = 0; i < options.length; i++) {
+        if (options[i].includes(input)) {
+            return input;
+        }
+    }
+}
 
 
 app.listen(3001, () =>
