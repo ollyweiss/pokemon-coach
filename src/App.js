@@ -5,6 +5,7 @@ import { Button, TextField, Container } from '@material-ui/core';
 function App() {
   const [name, setName] = useState('');
   const [greeting, setGreeting] = useState('');
+  const [type, setType] = useState('');
 
   const handleGreetingSubmit = (event) => {
     event.preventDefault();
@@ -13,10 +14,20 @@ function App() {
       .then(state => setGreeting(state.greeting));
   }
 
+  const getType = () => {
+    fetch(`/type?name=${encodeURIComponent(name)}`,)
+      .then(res => {
+        return JSON.stringify(res)
+      })
+      .then((response) => {
+        console.log('res: ' + response)
+      })
+  }
+
   return (
     <div className="App">
-   <link href="https://fonts.googleapis.com/css2?family=Raleway" rel="stylesheet">
-     </link>
+      <link href="https://fonts.googleapis.com/css2?family=Raleway" rel="stylesheet">
+      </link>
       <header className="header">
         <p>
           Pokemon Coach
@@ -34,15 +45,15 @@ function App() {
           />
         </form>
         <Button
-            mt={5}
-            type="submit"
-            variant="contained"
-            color="primary"
-            onClick={handleGreetingSubmit}
-          >
-            Submit
+          mt={5}
+          type="submit"
+          variant="contained"
+          color="primary"
+          onClick={getType}
+        >
+          Submit
           </Button>
-        <p>{greeting}</p>
+        <p>{type}</p>
       </Container>
     </div>
   );
