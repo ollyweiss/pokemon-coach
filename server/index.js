@@ -26,7 +26,6 @@ app.get('/weaknesses', async (req, res) => {
         console.log('wee');
     }
 
-    // const test = ["hi", "truffle"]
     // res.setHeader('Content-Type', 'application/json');
     // res.send(JSON.stringify(test));
 });
