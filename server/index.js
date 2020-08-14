@@ -51,7 +51,7 @@ app.get('/weaknesses', async (req, res) => {
         return res.status(400);
     }
     const weakness = pokemonWeaknessesJson[type];
-    return res.status(200).send(weakness);
+    return res.status(200).send(JSON.stringify(weakness));
 });
 
 
