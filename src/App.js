@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import axios from "axios";
 import './App.css';
 
 function App() {
-  const [data, setData] = useState();
+  const [name, setName] = useState('');
+  const [greeting, setGreeting] = useState('');
 
-  const callBackend = () => {
-    axios.get(`/api/greeting`)
-      .then(response => setData(response.data.greeting));
+  const handleGreetingSubmit = (event) => {
+    event.preventDefault();
+    fetch(`/api/greeting?name=${encodeURIComponent(name)}`)
+      .then(response => response.json())
+      .then(state => setGreeting(state.greeting));
   }
-
-  callBackend();
 
   return (
     <div className="App">
@@ -18,7 +18,18 @@ function App() {
         <p>
           POKEMON COACH
         </p>
-        {data}
+        <form
+          onSubmit={handleGreetingSubmit}>
+          <label htmlFor="name">Enter your name: </label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(event) => { setName(event.target.value) }}
+          />
+          <button type="submit">Submit</button>
+        </form>
+        <p>{greeting}</p>
       </header>
     </div>
   );
