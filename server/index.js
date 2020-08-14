@@ -88,8 +88,9 @@ function getTypes(req) {
     } else if (containsPokemon(name)) {
         const currPokemon = getPokemon(name);
         types = pokemon.get(currPokemon);
+        console.log(types);
         if (types[1] === '') {
-            types = types[0];
+            types = types.splice(0,1);
         }
     } else {
         return undefined;
