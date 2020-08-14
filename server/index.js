@@ -13,6 +13,8 @@ const pokemonTypes = pokemonTypeFile.toString().split('\n');
 const pokemon = parsePokemonFile();
 const pokemonWeaknesses = fs.readFileSync('./public/weaknesses.json').toString();
 const pokemonWeaknessesJson = JSON.parse(pokemonWeaknesses);
+const pokemonStrengths = fs.readFileSync('./public/strengths.json').toString();
+const pokemonStrengthsJson = JSON.parse(pokemonStrengths);
 
 
 function parsePokemonFile() {
@@ -28,16 +30,16 @@ function parsePokemonFile() {
 }
 
 
-app.get('/api/greeting', async (req, res) => {
-    let type = await getType(req);
+app.get('/api/greeting', (req, res) => {
+    let type = getType(req);
     console.log(type);
     console.log(pokemonWeaknessesJson);
     console.log(pokemonWeaknessesJson[type]);
 });
 
 
-app.get('/type', async (req, res) => {
-    const type = await getType(req);
+app.get('/type', (req, res) => {
+    const type = getType(req);
     if (type === undefined) {
         return res.status(400);
     }
@@ -45,23 +47,33 @@ app.get('/type', async (req, res) => {
 })
 
 
-app.get('/weaknesses', async (req, res) => {
+app.get('/weaknesses', (req, res) => {
+    const type = getType(req);
+    if (type === undefined) {
+        return res.status(400);
+    }
+    const weaknesses = pokemonWeaknessesJson[type];
+    return res.status(200).send(JSON.stringify(weaknesses));
+});
+
+
+app.get('/strengths', async (req, res) => {
     const type = await getType(req);
     if (type === undefined) {
         return res.status(400);
     }
-    const weakness = pokemonWeaknessesJson[type];
-    return res.status(200).send(JSON.stringify(weakness));
+    const strengths = pokemonStrengthsJson[type];
+    return res.status(200).send(JSON.stringify(strengths));
 });
 
 
-async function getType(req) {
+function getType(req) {
     const name = req.query.name.toLowerCase();
     let type = '';
     if (pokemonTypes.includes(name)) {
         type = name;
-    } else if (await containsPokemon(name)) {
-        const currPokemon = await getPokemon(name);
+    } else if (containsPokemon(name)) {
+        const currPokemon = getPokemon(name);
         type = pokemon.get(currPokemon)[0].toLowerCase();
     } else {
         return undefined;
@@ -70,7 +82,7 @@ async function getType(req) {
 }
 
 
-async function containsPokemon(input) {
+function containsPokemon(input) {
     const options = Array.from(pokemon.keys());
     for (let i = 0; i < options.length; i++) {
         if (options[i].includes(input)) {
@@ -81,7 +93,7 @@ async function containsPokemon(input) {
 }
 
 
-async function getPokemon(input) {
+function getPokemon(input) {
     const options = Array.from(pokemon.keys());
     for (let i = 0; i < options.length; i++) {
         if (options[i].includes(input)) {
