@@ -36,7 +36,22 @@ app.get('/api/greeting', async (req, res) => {
 });
 
 
+app.get('/type', async (req, res) => {
+    const type = await getType(req);
+    if (type === undefined) {
+        return res.status(400);
+    }
+    return res.status(200).send(type);
+})
+
+
 app.get('/weaknesses', async (req, res) => {
+    const type = await getType(req);
+    if (type === undefined) {
+        return res.status(400);
+    }
+    const weakness = pokemonWeaknessesJson[type];
+    return res.status(200).send(weakness);
 });
 
 
@@ -49,7 +64,7 @@ async function getType(req) {
         const currPokemon = await getPokemon(name);
         type = pokemon.get(currPokemon)[0].toLowerCase();
     } else {
-        return res.status(400);
+        return undefined;
     }
     return type;
 }
