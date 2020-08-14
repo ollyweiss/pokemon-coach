@@ -8,10 +8,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 app.use(bodyParser.json());
 
-const pokemonTypeFile = fs.readFileSync('./public/types.txt');
-const pokemonTypes = pokemonTypeFile.split('\n');
-
-const pokemonFile = fs.readFileSync('./public/pokemon.csv');
+// const pokemonTypeFile = fs.readFileSync('./public/types.txt');
+// const pokemonTypes = pokemonTypeFile.split('\n');
+//
+// const pokemonFile = fs.readFileSync('./public/pokemon.csv');
 
 
 app.get('/api/greeting', (req, res) => {
