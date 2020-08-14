@@ -4,24 +4,14 @@ import { Button, TextField, Container } from '@material-ui/core';
 
 function App() {
   const [name, setName] = useState('');
-  const [greeting, setGreeting] = useState('');
   const [type, setType] = useState('');
-
-  const handleGreetingSubmit = (event) => {
-    event.preventDefault();
-    fetch(`/api/greeting?name=${encodeURIComponent(name)}`)
-      .then(response => response.json())
-      .then(state => setGreeting(state.greeting));
-  }
 
   const getType = () => {
     fetch(`/type?name=${encodeURIComponent(name)}`,)
-      .then(res => {
-        return JSON.stringify(res)
-      })
-      .then((response) => {
-        console.log('res: ' + response)
-      })
+    .then(response => response.text())
+    .then((response) => {
+        setType(response);
+    })
   }
 
   return (
@@ -53,7 +43,7 @@ function App() {
         >
           Submit
           </Button>
-        <p>{type}</p>
+        <p className="type">{type}</p>
       </Container>
     </div>
   );
