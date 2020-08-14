@@ -8,10 +8,18 @@ function App() {
 
   const getType = () => {
     fetch(`/type?name=${encodeURIComponent(name)}`,)
-    .then(response => response.text())
     .then((response) => {
-        setType(response);
+      if (response.status >= 200 && response.status <= 299) {
+        return response.json();
+      } else {
+        throw Error(response.statusText);
+      }
     })
+    .then((jsonResponse) => {
+      setType(jsonResponse);
+    }).catch((error) => {
+      console.log(error);
+    });
   }
 
   return (
