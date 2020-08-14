@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import { Button, TextField, Container } from '@material-ui/core';
 
 function App() {
   const [name, setName] = useState('');
@@ -14,23 +15,35 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+   <link href="https://fonts.googleapis.com/css2?family=Raleway" rel="stylesheet">
+     </link>
+      <header className="header">
         <p>
-          POKEMON COACH
+          Pokemon Coach
         </p>
-        <form
-          onSubmit={handleGreetingSubmit}>
-          <label htmlFor="name">Enter your name: </label>
-          <input
-            id="name"
-            type="text"
+      </header>
+      <Container fixed>
+        <form>
+          <label className="label" htmlFor="name">Enter the Pokemon: </label>
+          <TextField
+            className="input"
+            id="filled-basic"
+            variant="filled"
             value={name}
             onChange={(event) => { setName(event.target.value) }}
           />
-          <button type="submit">Submit</button>
         </form>
+        <Button
+            mt={5}
+            type="submit"
+            variant="contained"
+            color="primary"
+            onClick={handleGreetingSubmit}
+          >
+            Submit
+          </Button>
         <p>{greeting}</p>
-      </header>
+      </Container>
     </div>
   );
 }
