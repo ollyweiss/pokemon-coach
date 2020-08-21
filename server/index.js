@@ -37,7 +37,7 @@ app.get('/api/greeting', (req, res) => {
 
 app.get('/types', (req, res) => {
     console.log("hi!!!");
-    console.log(getMaxStrengths(['bug', 'flying']));
+    console.log(getStrengths(['bug', 'flying']));
     const types = getTypes(req);
     if (types === undefined) {
         return res.status(400);
@@ -67,6 +67,15 @@ function getMaxStrengths(types) {
 }
 
 
+function getStrengths(types) {
+    const strengths_intersection = getTypesIntersection(types, pokemonStrengthsJson);
+    const strengths_union = getTypesUnion(types, pokemonStrengthsJson);
+    const strengths = getDifference(strengths_union, strengths_intersection);
+    const weaknesses_union = getTypesUnion(types, pokemonWeaknessesJson);
+    return getDifference(strengths, weaknesses_union);
+}
+
+
 function getTypesUnion(types, json) {
     let a = new Set(json[types[0]]);
     let b = new Set();
@@ -79,11 +88,21 @@ function getTypesUnion(types, json) {
 
 function getTypesIntersection(types, json) {
     let a = new Set(json[types[0]]);
-    let b = new Set(json[types[0]]);
+    let b = new Set();
     if (types.length > 1) {
         b = new Set(json[types[1]]);
     }
     return getIntersection(a, b);
+}
+
+
+function getTypesDifference(types, json) {
+    let a = new Set(json[types[0]]);
+    let b = new Set();
+    if (types.length > 1) {
+        b = new Set(json[types[1]]);
+    }
+    return getDifference(a, b);
 }
 
 
@@ -93,7 +112,7 @@ function getUnion(setA, setB) {
 
 
 function getIntersection(setA, setB) {
-    new Set([...setA].filter(x => setB.has(x)));
+    return new Set([...setA].filter(x => setB.has(x)));
 }
 
 
@@ -105,11 +124,14 @@ function getDifference(setA, setB) {
 function getTypes(req) {
     const name = req.query.name.toLowerCase();
     let types = [];
+    console.log(name);
+    console.log(containsPokemon(name));
     if (pokemonTypes.includes(name)) {
         types = [name];
     } else if (containsPokemon(name)) {
         const currPokemon = getPokemon(name);
-        types = pokemon.get(currPokemon);
+        console.log(currPokemon);
+        types = pokemon.get(currPokemon).slice();
         console.log(types);
         if (types[1] === '') {
             types = types.splice(0,1);
