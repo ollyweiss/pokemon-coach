@@ -3,11 +3,14 @@ import './App.css';
 import { Button, TextField, Container } from '@material-ui/core';
 
 function App() {
+  // Pokemon name
   const [name, setName] = useState('');
-  const [type, setType] = useState('');
+  // Pokemon types for said pokemon
+  const [typeOne, setTypeOne] = useState('');
+  const [typeTwo, setTypeTwo] = useState('');
 
-  const getType = () => {
-    fetch(`/type?name=${encodeURIComponent(name)}`,)
+  const getTypes = () => {
+    fetch(`/types?name=${encodeURIComponent(name)}`,)
     .then((response) => {
       if (response.status >= 200 && response.status <= 299) {
         return response.json();
@@ -16,10 +19,60 @@ function App() {
       }
     })
     .then((jsonResponse) => {
-      setType(jsonResponse);
+      if (jsonResponse.length === 2) {
+        setTypeOne(jsonResponse[0]);
+        setTypeTwo(jsonResponse[1]);
+      }
+      else {
+        setTypeOne(jsonResponse[0]);
+      }
     }).catch((error) => {
       console.log(error);
     });
+  }
+
+  const getStrengths = (type) => {
+    fetch(`/strengths?type=${encodeURIComponent(type)}`,)
+    .then((response) => {
+      if (response.status >= 200 && response.status <= 299) {
+        return response.json();
+      } else {
+        throw Error(response.statusText);
+      }
+    })
+    .then((jsonResponse) => {
+      console.log(jsonResponse);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  const getWeaknesses = (type) => {
+    fetch(`/weaknesses?type=${encodeURIComponent(type)}`,)
+    .then((response) => {
+      if (response.status >= 200 && response.status <= 299) {
+        return response.json();
+      } else {
+        throw Error(response.statusText);
+      }
+    })
+    .then((jsonResponse) => {
+      console.log(jsonResponse);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
+  const showResults = async () => {
+    await getTypes();
+      // const typeOneStrengths = await getStrengths(typeOne);
+      // const typeOneWeaknesses = await getWeaknesses(typeOne);
+      // const typeTwoStrengths = await getStrengths(typeTwo);
+      // const typeTwoWeaknesses = await getWeaknesses(typeTwo);
+      // console.log(typeOneStrengths);
+      // console.log(typeOneWeaknesses);
+      // console.log(typeTwoStrengths);
+      // console.log(typeTwoWeaknesses);
   }
 
   return (
@@ -47,11 +100,13 @@ function App() {
           type="submit"
           variant="contained"
           color="primary"
-          onClick={getType}
+          onClick={showResults}
         >
           Submit
           </Button>
-        <p className="type">{type}</p>
+        <p className="type">{typeOne}</p>
+        {typeOne && typeTwo && <div className="type">&</div>}
+        <p className="type">{typeTwo}</p>
       </Container>
     </div>
   );
