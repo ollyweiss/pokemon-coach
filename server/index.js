@@ -36,8 +36,6 @@ app.get('/api/greeting', (req, res) => {
 
 
 app.get('/types', (req, res) => {
-    console.log("hi!!!");
-    console.log(getStrengths(['bug', 'flying']));
     const types = getTypes(req);
     if (types === undefined) {
         return res.status(400);
@@ -60,6 +58,18 @@ app.get('/strengths', async (req, res) => {
 });
 
 
+app.get('/info', async (req, res) => {
+    const types = req.query.types;
+    const info = {
+        "maxStrengths": [...getMaxStrengths(types)],
+        "strengths": [...getStrengths(types)],
+        "weaknesses": [...getWeaknesses(types)],
+        "maxWeaknesses": [...getMaxWeaknesses(types)]
+    };
+    return res.status(200).send(JSON.stringify(info));
+});
+
+
 function getMaxStrengths(types) {
     const strengths_intersection = getTypesIntersection(types, pokemonStrengthsJson);
     const weaknesses_union = getTypesUnion(types, pokemonWeaknessesJson);
@@ -73,6 +83,22 @@ function getStrengths(types) {
     const strengths = getDifference(strengths_union, strengths_intersection);
     const weaknesses_union = getTypesUnion(types, pokemonWeaknessesJson);
     return getDifference(strengths, weaknesses_union);
+}
+
+
+function getMaxWeaknesses(types) {
+    const weaknesses_intersection = getTypesIntersection(types, pokemonWeaknessesJson);
+    const strengths_union = getTypesUnion(types, pokemonStrengthsJson);
+    return getDifference(weaknesses_intersection, strengths_union);
+}
+
+
+function getWeaknesses(types) {
+    const weaknesses_intersection = getTypesIntersection(types, pokemonWeaknessesJson);
+    const weaknesses_union = getTypesUnion(types, pokemonWeaknessesJson);
+    const weaknesses = getDifference(weaknesses_union, weaknesses_intersection);
+    const strengths_union = getTypesUnion(types, pokemonStrengthsJson);
+    return getDifference(weaknesses, strengths_union);
 }
 
 
@@ -96,16 +122,6 @@ function getTypesIntersection(types, json) {
 }
 
 
-function getTypesDifference(types, json) {
-    let a = new Set(json[types[0]]);
-    let b = new Set();
-    if (types.length > 1) {
-        b = new Set(json[types[1]]);
-    }
-    return getDifference(a, b);
-}
-
-
 function getUnion(setA, setB) {
     return new Set([...setA, ...setB]);
 }
@@ -124,15 +140,11 @@ function getDifference(setA, setB) {
 function getTypes(req) {
     const name = req.query.name.toLowerCase();
     let types = [];
-    console.log(name);
-    console.log(containsPokemon(name));
     if (pokemonTypes.includes(name)) {
         types = [name];
     } else if (containsPokemon(name)) {
         const currPokemon = getPokemon(name);
-        console.log(currPokemon);
         types = pokemon.get(currPokemon).slice();
-        console.log(types);
         if (types[1] === '') {
             types = types.splice(0,1);
         }
