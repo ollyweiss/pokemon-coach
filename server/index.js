@@ -36,17 +36,17 @@ app.get('/api/greeting', (req, res) => {
 });
 
 
-app.get('/type', (req, res) => {
-    const type = getType(req);
-    if (type === undefined) {
+app.get('/types', (req, res) => {
+    const types = getTypes(req);
+    if (types === undefined) {
         return res.status(400);
     }
-    return res.status(200).send(JSON.stringify(type));
-})
+    return res.status(200).send(JSON.stringify(types));
+});
 
 
 app.get('/weaknesses', (req, res) => {
-    const type = getType(req);
+    const type = req.query.type;
     if (type === undefined) {
         return res.status(400);
     }
@@ -56,7 +56,7 @@ app.get('/weaknesses', (req, res) => {
 
 
 app.get('/strengths', async (req, res) => {
-    const type = await getType(req);
+    const type = req.query.type;
     if (type === undefined) {
         return res.status(400);
     }
