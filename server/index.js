@@ -31,12 +31,13 @@ function parsePokemonFile() {
 
 
 app.get('/api/greeting', (req, res) => {
-    let types = getTypes(req);
-    console.log(types);
+    console.log(getMaxStrengths(['bug', 'flying']));
 });
 
 
 app.get('/types', (req, res) => {
+    console.log("hi!!!");
+    console.log(getMaxStrengths(['bug', 'flying']));
     const types = getTypes(req);
     if (types === undefined) {
         return res.status(400);
@@ -47,9 +48,6 @@ app.get('/types', (req, res) => {
 
 app.get('/weaknesses', (req, res) => {
     const type = req.query.type;
-    if (type === undefined) {
-        return res.status(400);
-    }
     const weaknesses = pokemonWeaknessesJson[type];
     return res.status(200).send(JSON.stringify(weaknesses));
 });
@@ -57,12 +55,51 @@ app.get('/weaknesses', (req, res) => {
 
 app.get('/strengths', async (req, res) => {
     const type = req.query.type;
-    if (type === undefined) {
-        return res.status(400);
-    }
     const strengths = pokemonStrengthsJson[type];
     return res.status(200).send(JSON.stringify(strengths));
 });
+
+
+function getMaxStrengths(types) {
+    const strengths_intersection = getTypesIntersection(types, pokemonStrengthsJson);
+    const weaknesses_union = getTypesUnion(types, pokemonWeaknessesJson);
+    return getDifference(strengths_intersection, weaknesses_union);
+}
+
+
+function getTypesUnion(types, json) {
+    let a = new Set(json[types[0]]);
+    let b = new Set();
+    if (types.length > 1) {
+        b = new Set(json[types[1]]);
+    }
+    return getUnion(a, b);
+}
+
+
+function getTypesIntersection(types, json) {
+    let a = new Set(json[types[0]]);
+    let b = new Set(json[types[0]]);
+    if (types.length > 1) {
+        b = new Set(json[types[1]]);
+    }
+    return getIntersection(a, b);
+}
+
+
+function getUnion(setA, setB) {
+    return new Set([...setA, ...setB]);
+}
+
+
+function getIntersection(setA, setB) {
+    new Set([...setA].filter(x => setB.has(x)));
+}
+
+
+function getDifference(setA, setB) {
+    return new Set([...setA].filter(x => !setB.has(x)));
+}
 
 
 function getTypes(req) {
