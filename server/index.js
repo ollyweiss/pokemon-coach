@@ -65,21 +65,6 @@ app.get('/strengths', async (req, res) => {
 });
 
 
-function getType(req) {
-    const name = req.query.name.toLowerCase();
-    let type = '';
-    if (pokemonTypes.includes(name)) {
-        type = name;
-    } else if (containsPokemon(name)) {
-        const currPokemon = getPokemon(name);
-        type = pokemon.get(currPokemon)[0].toLowerCase();
-    } else {
-        return undefined;
-    }
-    return type;
-}
-
-
 function getTypes(req) {
     const name = req.query.name.toLowerCase();
     let types = [];
